@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Gelembung Keberuntungan</title>
+    <style>
+        :root {
+            --sky: #e1f5fe;
+            --bubble-color: rgba(0, 188, 212, 0.3);
+            --bubble-border: #00acc1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eceff1;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #game-box {
+            width: 95%;
+            max-width: 600px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Stats Bar */
+        .header {
+            background: #37474f;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        /* Visual Area */
+        #visual-frame {
+            height: 250px;
+            background: linear-gradient(to bottom, var(--sky), #ffffff);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 3px solid #cfd8dc;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        #bubble {
+            width: 50px;
+            height: 50px;
+            background: var(--bubble-color);
+            border: 2px solid var(--bubble-border);
+            border-radius: 50%;
+            margin-bottom: 20px;
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: inset -10px -10px 15px rgba(255,255,255,0.4);
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Money Rain Effect */
+        .money {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0;
+        }
+
+        @keyframes moneyFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(350px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Quiz Area */
+        #quiz-area { padding: 25px; text-align: center; }
+        #question { font-size: 1.1rem; font-weight: bold; margin-bottom: 20px; min-height: 50px; }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .opt-btn {
+            padding: 15px;
+            border: 2px solid #b0bec5;
+            background: #fafafa;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .opt-btn:hover { background: #e0f7fa; border-color: #00acc1; }
+
+        /* Feedback */
+        #feedback-box {
+            display: none;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            text-align: left;
+        }
+        .correct { background: #e8f5e9; color: #2e7d32; border: 1px solid #4caf50; }
+        .wrong { background: #ffebee; color: #c62828; border: 1px solid #ef5350; }
+
+        .next-btn {
+            width: 100%;
+            padding: 12px;
+            background: #37474f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Win Screen */
+        #win-screen {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .trophy-wrap {
+            position: relative;
+            width: 160px; height: 160px;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .rays {
+            position: absolute;
+            width: 200px; height: 200px;
+            background: repeating-conic-gradient(from 0deg, rgba(255,215,0,0.3) 0deg 15deg, transparent 15deg 30deg);
+            border-radius: 50%;
+            animation: rotateRays 4s linear infinite;
+        }
+
+        .trophy { font-size: 80px; position: relative; z-index: 2; animation: bounce 2s infinite; }
+
+        @keyframes rotateRays { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+    </style>
+</head>
+<body>
+
+<div id="game-box">
+    <div class="header">
+        <div>Soal: <span id="q-done">0</span>/<span id="q-total">0</span></div>
+        <div>Murni: <span id="score-m">0</span> | Ulang: <span id="score-u">0</span></div>
+    </div>
+
+    <div id="visual-frame">
+        <div id="bubble"></div>
+        <div id="money-container"></div>
+    </div>
+
+    <div id="quiz-area">
+        <div id="q-container">
+            <div id="question">Memuat soal...</div>
+            <div class="options-grid" id="options"></div>
+        </div>
+
+        <div id="feedback-box">
+            <div id="fb-text"></div>
+            <button class="next-btn" onclick="processNext()">Lanjut</button>
+        </div>
+    </div>
+
+    <div id="win-screen">
+        <div class="trophy-wrap">
+            <div class="rays"></div>
+            <div class="trophy">🏆</div>
+        </div>
+        <h2 style="color: #2e7d32;">Anda Anak yang hebat!</h2>
+        <p>Tingkatkan terus dengan banyak membaca agar pengetahuanmu luas.</p>
+        <button class="next-btn" style="max-width: 200px; background: #d32f2f;" onclick="closeGame()">Close</button>
+    </div>
+</div>
+
+<script>
+    const bankSoal = [
+        { q: "Mata uang sah Indonesia adalah...", a: ["Ringgit", "Dollar", "Rupiah", "Yen"], c: 2, e: "Rupiah adalah mata uang resmi kita." },
+        { q: "Tempat menyimpan uang yang paling aman adalah...", a: ["Bawah bantal", "Bank", "Kantong celana", "Halaman"], c: 1, e: "Bank memiliki sistem keamanan terjamin." },
+        { q: "Apa nama alat pembayaran digital yang menggunakan kode kotak?", a: ["Barcode", "QRIS", "Voucher", "Kupon"], c: 1, e: "QRIS digunakan untuk transaksi non-tunai." },
+        { q: "Menyisihkan sebagian uang untuk masa depan disebut...", a: ["Belanja", "Menabung", "Barter", "Jual"], c: 1, e: "Menabung membantu kita memiliki simpanan." }
+    ];
+
+    let current = 0;
+    let scoreMurni = 0;
+    let scoreUlang = 0;
+    let isRepeating = false;
+    let bubbleSize = 50;
+    const pointPerSoal = 100 / bankSoal.length;
+
+    function init() {
+        document.getElementById('q-total').innerText = bankSoal.length;
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const data = bankSoal[current];
+        document.getElementById('q-done').innerText = current + 1;
+        document.getElementById('question').innerText = data.q;
+        document.getElementById('q-container').style.display = 'block';
+        document.getElementById('feedback-box').style.display = 'none';
+
+        const grid = document.getElementById('options');
+        grid.innerHTML = '';
+        data.a.forEach((txt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerText = txt;
+            btn.onclick = () => checkAnswer(i);
+            grid.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(idx) {
+        const data = bankSoal[current];
+        const fb = document.getElementById('feedback-box');
+        const fbTxt = document.getElementById('fb-text');
+
+        document.getElementById('q-container').style.display = 'none';
+        fb.style.display = 'block';
+
+        if (idx === data.c) {
+            fb.className = 'correct';
+            if (!isRepeating) {
+                scoreMurni += pointPerSoal;
+                bubbleSize += 40; // Gelembung membesar
+                updateBubble();
+                fbTxt.innerHTML = "<b>Benar!</b> Hebat, pertahankan prestasimu!";
+            } else {
+                scoreUlang += pointPerSoal;
+                fbTxt.innerHTML = "<b>Bagus!</b> Kamu sudah memperbaikinya.";
+            }
+        } else {
+            fb.className = 'wrong';
+            fbTxt.innerHTML = `<b>Jawaban Salah</b><br>Kunci: ${data.a[data.c]}<br>Penjelasan: ${data.e}`;
+            isRepeating = true;
+        }
+        
+        document.getElementById('score-m').innerText = Math.round(scoreMurni);
+        document.getElementById('score-u').innerText = Math.round(scoreUlang);
+    }
+
+    function updateBubble() {
+        const b = document.getElementById('bubble');
+        b.style.width = bubbleSize + 'px';
+        b.style.height = bubbleSize + 'px';
+    }
+
+    function processNext() {
+        if (isRepeating && document.getElementById('feedback-box').className === 'wrong') {
+            loadQuestion();
+        } else {
+            isRepeating = false;
+            current++;
+            if (current < bankSoal.length) {
+                loadQuestion();
+            } else {
+                finishGame();
+            }
+        }
+    }
+
+    function finishGame() {
+        // Efek Meletus
+        const b = document.getElementById('bubble');
+        b.style.transform = 'scale(1.5)';
+        b.style.opacity = '0';
+        
+        // Hujan Uang
+        for(let i=0; i<30; i++) {
+            setTimeout(createMoney, i * 100);
+        }
+
+        // Tampilkan layar menang setelah jeda sedikit
+        setTimeout(() => {
+            document.getElementById('win-screen').style.display = 'flex';
+        }, 2000);
+    }
+
+    function createMoney() {
+        const money = document.createElement('div');
+        money.className = 'money';
+        money.innerText = '💵';
+        money.style.left = Math.random() * 80 + 10 + '%';
+        money.style.top = '-50px';
+        money.style.animation = `moneyFall ${Math.random() * 2 + 1}s linear forwards`;
+        document.getElementById('money-container').appendChild(money);
+        setTimeout(() => money.remove(), 3000);
+    }
+
+    function closeGame() {
+        alert("Nantikan Soal Latihan berikutnya, Salam Sukses");
+        // Mencoba menutup jendela (hanya bekerja jika jendela dibuka via JS)
+        // Sebagai fallback, kita reset halaman atau memberikan pesan sukses
+        document.body.innerHTML = "<div style='text-align:center; padding:50px;'><h1>Salam Sukses!</h1><p>Silakan tutup tab browser Anda.</p></div>";
+    }
+
+    init();
+</script>
+</body>
+</html>
