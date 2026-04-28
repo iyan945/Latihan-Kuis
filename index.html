@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis Cerdas Finansial</title>
+    <title>Kuis Pintar Berhadiah</title>
     <style>
         :root {
             --sky: #e1f5fe;
-            --bubble-color: rgba(0, 188, 212, 0.3);
+            --bubble-color: rgba(0, 188, 212, 0.2);
             --bubble-border: #00acc1;
-            --dark: #37474f;
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             background: #eceff1;
             margin: 0;
             display: flex;
@@ -32,41 +31,38 @@
             position: relative;
         }
 
-        /* Stats Bar */
         .header {
-            background: var(--dark);
+            background: #263238;
             color: white;
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
-        /* Visual Area */
         #visual-frame {
             height: 220px;
             background: linear-gradient(to bottom, var(--sky), #ffffff);
             position: relative;
             overflow: hidden;
-            border-bottom: 3px solid #cfd8dc;
             display: flex;
             justify-content: center;
             align-items: flex-end;
+            border-bottom: 2px solid #cfd8dc;
         }
 
         #bubble {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background: var(--bubble-color);
             border: 2px solid var(--bubble-border);
             border-radius: 50%;
             margin-bottom: 20px;
-            transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: inset -10px -10px 15px rgba(255,255,255,0.4);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: inset -5px -5px 15px rgba(255,255,255,0.5);
             z-index: 5;
         }
 
-        /* Money Rain */
         .money {
             position: absolute;
             font-size: 24px;
@@ -79,9 +75,8 @@
             100% { transform: translateY(350px) rotate(360deg); opacity: 0; }
         }
 
-        /* Quiz Area */
         #quiz-area { padding: 25px; text-align: center; }
-        #question { font-size: 1.1rem; font-weight: bold; margin-bottom: 20px; min-height: 50px; color: #263238; }
+        #question { font-size: 1.1rem; font-weight: bold; margin-bottom: 20px; min-height: 50px; }
 
         .options-grid {
             display: grid;
@@ -95,27 +90,24 @@
             background: #fafafa;
             border-radius: 12px;
             cursor: pointer;
-            font-weight: 500;
             transition: 0.2s;
         }
 
         .opt-btn:hover { background: #e0f7fa; border-color: #00acc1; }
 
-        /* Feedback */
         #feedback-box {
             display: none;
             padding: 15px;
             border-radius: 12px;
-            margin-top: 10px;
             text-align: left;
         }
         .correct { background: #e8f5e9; color: #2e7d32; border: 1px solid #4caf50; }
         .wrong { background: #ffebee; color: #c62828; border: 1px solid #ef5350; }
 
-        .btn-action {
+        .action-btn {
             width: 100%;
             padding: 12px;
-            background: var(--dark);
+            background: #263238;
             color: white;
             border: none;
             border-radius: 8px;
@@ -124,8 +116,8 @@
             font-weight: bold;
         }
 
-        /* Win Screen & Table */
-        #win-screen {
+        /* Result Screen */
+        #result-screen {
             display: none;
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -136,9 +128,37 @@
             align-items: center;
             padding: 20px;
             box-sizing: border-box;
-            overflow-y: auto;
+            text-align: center;
         }
 
+        .trophy-wrap {
+            position: relative;
+            width: 140px; height: 140px;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .rays {
+            position: absolute;
+            width: 180px; height: 180px;
+            background: repeating-conic-gradient(from 0deg, rgba(255,215,0,0.3) 0deg 15deg, transparent 15deg 30deg);
+            border-radius: 50%;
+            animation: rotate 4s linear infinite;
+        }
+
+        .trophy { font-size: 70px; position: relative; z-index: 2; animation: bounce 2s infinite; }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+    /*    .stat-table {
+            width: 100%;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            border-collapse: collapse;
+        } */
+    /*    .stat-table td { padding: 5px; border-bottom: 1px solid #eee; }  */
+        
+        /* di bawah ini koding dari file index.html */
         .stat-table {
             width: 100%;
             margin: 15px 0;
@@ -154,60 +174,50 @@
 
         .stat-table th { background-color: #f2f2f2; }
 
-        .trophy-wrap {
-            position: relative;
-            width: 140px; height: 140px;
-            display: flex; justify-content: center; align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .rays {
-            position: absolute;
-            width: 180px; height: 180px;
-            background: repeating-conic-gradient(from 0deg, rgba(255,215,0,0.3) 0deg 15deg, transparent 15deg 30deg);
-            border-radius: 50%;
-            animation: rotateRays 4s linear infinite;
-        }
-
-        .trophy { font-size: 70px; position: relative; z-index: 2; animation: bounce 2s infinite; }
-
-        @keyframes rotateRays { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-
     </style>
 </head>
 <body>
 
 <div id="game-box">
-    <div class="header">
-        <div>Soal: <span id="q-done">0</span>/<span id="q-total">0</span></div>
-        <div>Murni: <span id="disp-m">0</span> | Ulang: <span id="disp-u">0</span></div>
+    <div class="header" id="stats-header">
+        <div>Soal: <span id="q-idx">0</span>/<span id="q-total">0</span></div>
+        <div>Murni: <span id="sc-m">0</span> | Ulang: <span id="sc-u">0</span></div>
     </div>
 
     <div id="visual-frame">
         <div id="bubble"></div>
-        <div id="money-container"></div>
+        <div id="money-box"></div>
     </div>
 
     <div id="quiz-area">
-        <div id="q-container">
+        <div id="q-content">
             <div id="question">Memuat soal...</div>
             <div class="options-grid" id="options"></div>
         </div>
 
         <div id="feedback-box">
             <div id="fb-text"></div>
-            <button class="btn-action" onclick="processNext()">Lanjut</button>
+            <button class="action-btn" onclick="nextStep()">Lanjut</button>
         </div>
     </div>
 
-    <div id="win-screen">
+    <div id="result-screen">
         <div class="trophy-wrap">
             <div class="rays"></div>
             <div class="trophy">🏆</div>
         </div>
-        <h3 id="grade-msg" style="margin: 5px 0;">Memproses Nilai...</h3>
+        <h3 id="grade-msg" style="margin: 10px 0; color: #2e7d32;"></h3>
         
+        <!--<table class="stat-table">
+            <tr><td>Jawaban Langsung</td><td id="res-m-count">0</td></tr>
+            <tr><td>Jawaban Mengulang</td><td id="res-u-count">0</td></tr>
+            <tr><td><b>Nilai Langsung</b></td><td><b id="res-m-val">0</b></td></tr>
+            <tr><td><b>Nilai Mengulang</b></td><td><b id="res-u-val">0</b></td></tr>
+        </table>
+
+        <button class="action-btn" style="background: #d32f2f;" onclick="forceClose()">Close</button>
+
+    <!-- ini dari file index.html -->
         <table class="stat-table">
             <tr>
                 <th>Kategori</th>
@@ -230,157 +240,162 @@
             </tr>
         </table>
 
-        <button class="btn-action" style="max-width: 150px; background: #d32f2f;" onclick="closeGame()">Close</button>
+        <!--<button class="btn-action" style="max-width: 150px; background: #d32f2f;" onclick="closeGame()">Close</button>-->
+        <button class="action-btn" style="background: #d32f2f;" onclick="forceClose()">Close</button>
+
     </div>
 </div>
 
 <script>
-    // Silakan tambah soal di sini. Sistem skor akan menyesuaikan otomatis.
     const bankSoal = [
-        { q: "Apa nama mata uang resmi Indonesia?", a: ["Ringgit", "Dollar", "Rupiah", "Yen"], c: 2, e: "Rupiah adalah mata uang resmi Indonesia." },
-        { q: "Menabung uang sebaiknya dilakukan di...", a: ["Bawah bantal", "Bank", "Kantong celana", "Halaman"], c: 1, e: "Bank adalah tempat menyimpan uang paling aman." },
-        { q: "Membeli barang sesuai kebutuhan disebut...", a: ["Boros", "Hemat", "Kikir", "Serakah"], c: 1, e: "Hemat adalah menggunakan uang sesuai kebutuhan." },
-        { q: "Barang yang digunakan sebagai alat tukar sah adalah...", a: ["Batu", "Uang", "Daun", "Garam"], c: 1, e: "Uang adalah alat tukar yang sah." },
-        { q: "QRIS adalah alat pembayaran berbentuk...", a: ["Kertas", "Logam", "Digital", "Barter"], c: 2, e: "QRIS adalah standar pembayaran digital di Indonesia." }
+        { q: "Apa ibukota negara Indonesia saat ini?", a: ["Surabaya", "Jakarta", "IKN", "Bandung"], c: 1, e: "Jakarta adalah ibukota saat ini." },
+        { q: "Lambang negara Indonesia adalah...", a: ["Padi Kapas", "Rantai", "Garuda Pancasila", "Pohon Beringin"], c: 2, e: "Garuda Pancasila adalah lambang negara kita." },
+        { q: "Warna bendera Indonesia adalah...", a: ["Merah Putih", "Putih Merah", "Merah Kuning", "Biru Putih"], c: 0, e: "Bendera kita adalah Sang Merah Putih." },
+        { q: "Dasar negara Indonesia adalah...", a: ["UUD 45", "Proklamasi", "Pancasila", "Kepres"], c: 2, e: "Pancasila terdiri dari lima dasar." }
     ];
 
     let current = 0;
     let countMurni = 0;
     let countUlang = 0;
     let isRepeating = false;
-    let bubbleSize = 50;
-
-    const totalSoal = bankSoal.length;
-    const poinPerSoal = 100 / totalSoal;
+    let bSize = 10; //40;
+    const pointWeight = 100 / bankSoal.length;
 
     function init() {
-        document.getElementById('q-total').innerText = totalSoal;
-        loadQuestion();
+        document.getElementById('q-total').innerText = bankSoal.length;
+        loadQ();
     }
 
-    function loadQuestion() {
-        const data = bankSoal[current];
-        document.getElementById('q-done').innerText = current + 1;
-        document.getElementById('question').innerText = data.q;
-        document.getElementById('q-container').style.display = 'block';
+    function loadQ() {
+        const d = bankSoal[current];
+        document.getElementById('q-idx').innerText = current + 1;
+        document.getElementById('question').innerText = d.q;
+        document.getElementById('q-content').style.display = 'block';
         document.getElementById('feedback-box').style.display = 'none';
 
-        const grid = document.getElementById('options');
-        grid.innerHTML = '';
-        data.a.forEach((txt, i) => {
-            const btn = document.createElement('button');
-            btn.className = 'opt-btn';
-            btn.innerText = txt;
-            btn.onclick = () => checkAnswer(i);
-            grid.appendChild(btn);
+        const opt = document.getElementById('options');
+        opt.innerHTML = '';
+        d.a.forEach((t, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = t;
+            b.onclick = () => check(i);
+            opt.appendChild(b);
         });
     }
 
-    function checkAnswer(idx) {
-        const data = bankSoal[current];
+    function check(idx) {
+        const d = bankSoal[current];
         const fb = document.getElementById('feedback-box');
-        const fbTxt = document.getElementById('fb-text');
+        const txt = document.getElementById('fb-text');
 
-        document.getElementById('q-container').style.display = 'none';
+        document.getElementById('q-content').style.display = 'none';
         fb.style.display = 'block';
 
-        if (idx === data.c) {
+        if (idx === d.c) {
             fb.className = 'correct';
             if (!isRepeating) {
                 countMurni++;
-                bubbleSize += (180 / totalSoal); // Gelembung membesar perlahan
+                bSize += 35;
                 updateBubble();
-                fbTxt.innerHTML = "<b>Benar!</b> Jawabanmu tepat sekali.";
+                txt.innerHTML = "<b>Luar Biasa!</b> Jawabanmu tepat.";
             } else {
                 countUlang++;
-                fbTxt.innerHTML = "<b>Bagus!</b> Kamu berhasil memperbaiki jawaban.";
+                txt.innerHTML = "<b>Bagus!</b> Kamu sudah memperbaikinya.";
             }
         } else {
             fb.className = 'wrong';
-            fbTxt.innerHTML = `<b>Kurang Tepat</b><br>Kunci: ${data.a[data.c]}<br>Penjelasan: ${data.e}`;
+            txt.innerHTML = `<b>Kurang Tepat.</b><br>Kunci: ${d.a[d.c]}<br>Penjelasan: ${d.e}`;
             isRepeating = true;
         }
         
-        document.getElementById('disp-m').innerText = countMurni;
-        document.getElementById('disp-u').innerText = countUlang;
+        document.getElementById('sc-m').innerText = countMurni;
+        document.getElementById('sc-u').innerText = countUlang;
+    //    document.getElementById('sc-m').innerText = Math.round(countMurni * pointWeight);
+    //    document.getElementById('sc-u').innerText = Math.round(countUlang * pointWeight);
     }
 
     function updateBubble() {
         const b = document.getElementById('bubble');
-        b.style.width = bubbleSize + 'px';
-        b.style.height = bubbleSize + 'px';
+        b.style.width = bSize + 'px';
+        b.style.height = bSize + 'px';
     }
 
-    function processNext() {
-        const isWrong = document.getElementById('feedback-box').className === 'wrong';
-        if (isRepeating && isWrong) {
-            loadQuestion();
+    function nextStep() {
+        if (isRepeating && document.getElementById('feedback-box').className === 'wrong') {
+            loadQ();
         } else {
             isRepeating = false;
             current++;
-            if (current < totalSoal) {
-                loadQuestion();
+            if (current < bankSoal.length) {
+                loadQ();
             } else {
-                finishGame();
+                showFinal();
             }
         }
     }
 
-    function finishGame() {
+    function showFinal() {
         // Efek Meletus
         const b = document.getElementById('bubble');
-        b.style.transform = 'scale(1.5)';
+        b.style.transform = 'scale(1.8)';
         b.style.opacity = '0';
         
         // Hujan Uang
         for(let i=0; i<40; i++) {
-            setTimeout(createMoney, i * 80);
+            setTimeout(() => {
+                const m = document.createElement('div');
+                m.className = 'money';
+                m.innerText = '💵';
+                m.style.left = Math.random() * 90 + '%';
+                m.style.top = '-50px';
+                m.style.animation = `moneyFall ${Math.random() * 2 + 1}s linear forwards`;
+                document.getElementById('money-box').appendChild(m);
+            }, i * 80);
         }
 
-        // Hitung Statistik Akhir
-        const nilaiMurni = countMurni * poinPerSoal;
-        const nilaiUlang = countUlang * poinPerSoal;
-        const totalSkor = nilaiMurni + nilaiUlang;
+        const scoreLangsung = Math.round(countMurni * pointWeight);
+        const scoreUlang = Math.round(countUlang * pointWeight);
+        const msgEl = document.getElementById('grade-msg');
+
+        // Logika Grade Dinamis
+        if (scoreLangsung >= 96) {
+            msgEl.innerText = "Anda Anak Hebat Sekali, Tingkatkan dan Pertahankan Prestasi Anda";
+        } else if (scoreLangsung >= 81) {
+            msgEl.innerText = "Anda Anak Hebat, Membaca lebih tekun lagi Tingkatkan Prestasi Anda";
+        } else if (scoreLangsung >= 71) {
+            msgEl.innerText = "Anda Anak Pintar, Banyak Membaca lebih Giat lagi";
+        } else if (scoreLangsung >= 61) {
+            msgEl.innerText = "Anda Anak Baik, Kurangi Waktu Main Anda dan Membaca lebih tekun lagi Tingkatkan Prestasi Anda";
+        } else {
+            msgEl.innerText = "Tetap Semangat, Belajar Lebih Giat Lagi Ya!";
+            msgEl.style.color = "#c62828";
+        }
 
         document.getElementById('res-m-count').innerText = countMurni;
-        document.getElementById('res-m-val').innerText = nilaiMurni.toFixed(1);
         document.getElementById('res-u-count').innerText = countUlang;
-        document.getElementById('res-u-val').innerText = nilaiUlang.toFixed(1);
-        document.getElementById('res-total').innerText = totalSkor.toFixed(1);
+        document.getElementById('res-m-val').innerText = scoreLangsung;
+        document.getElementById('res-u-val').innerText = scoreUlang;
 
-        // Grade Ucapan
-        const msgEl = document.getElementById('grade-msg');
-        if (totalSkor >= 96) {
-            msgEl.innerText = "Anda Anak Hebat Sekali, Tingkatkan dan Pertahankan Presatasi Anda";
-        } else if (totalSkor >= 81) {
-            msgEl.innerText = "Anda Anak Hebat, Membaca lebih tekun lagi Tingkatkan Presatasi Anda";
-        } else if (totalSkor >= 71) {
-            msgEl.innerText = "Anda Anak Pintar, Banyak Membaca lebih Giat lagi";
-        } else if (totalSkor >= 61) {
-            msgEl.innerText = "Anda Anak Baik, Kurangi Waktu Main Anda dan Membaca lebih tekun lagi";
-        } else {
-            msgEl.innerText = "Ayo Semangat Lagi Belajarnya!";
-        }
+        // dibawah ini diberi tambahan sendiri, di coba sukses sesuai harapan
+        document.getElementById('res-total').innerText = scoreLangsung+scoreUlang;
 
         setTimeout(() => {
-            document.getElementById('win-screen').style.display = 'flex';
-        }, 2000);
+            document.getElementById('result-screen').style.display = 'flex';
+        }, 1800);
     }
 
-    function createMoney() {
-        const money = document.createElement('div');
-        money.className = 'money';
-        money.innerText = '💵';
-        money.style.left = Math.random() * 80 + 10 + '%';
-        money.style.top = '-50px';
-        money.style.animation = `moneyFall ${Math.random() * 2 + 1}s linear forwards`;
-        document.getElementById('money-container').appendChild(money);
-        setTimeout(() => money.remove(), 3000);
-    }
-
-    function closeGame() {
+    function forceClose() {
+        // Menyamarkan file dengan menghapus seluruh konten dan menggantinya
         alert("Nantikan Soal Latihan berikutnya, Salam Sukses");
-        window.location.reload();
+        document.body.innerHTML = `
+            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; background:#263238; color:white; text-align:center; font-family:sans-serif;">
+                <h1 style="font-size:2rem;">Salam Sukses!</h1>
+                <p style="opacity:0.7;">Sesi latihan telah selesai secara aman.</p>
+            </div>
+        `;
+        // Mencoba menutup tab (hanya berhasil jika dibuka lewat script)
+        window.close();
     }
 
     init();
